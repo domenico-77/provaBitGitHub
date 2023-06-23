@@ -1,33 +1,36 @@
 import requests
 import matplotlib.pyplot as plt
 
-def get_commits(owner, repository, start_date, end_date):
-    url = f"https://api.github.com/repos/{owner}/{repository}/commits"
+def get_pr_stats(owner, repository, start_date, end_date):
+    url = f"https://api.github.com/repos/{owner}/{repository}/pulls"
     params = {
-        "since": start_date,
-        "until": end_date,
-        "per_page": 100  # Imposta il numero massimo di commit per pagina
+        "state": "closed",
+        "base": "master",
+        "sort": "created",
+        "direction": "asc",
+        "per_page": 100
     }
     headers = {
         "Authorization": "token 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"
     }
     
-    commits = []
+    pr_stats = {
+        "pr_merged": 0
+    }
+    
     page = 1
     
     while True:
         response = requests.get(url, params=params, headers=headers)
         
         if response.status_code == 200:
-            page_commits = response.json()
+            page_prs = response.json()
             
-            # Aggiungi solo i commit nel periodo specificato
-            filtered_commits = [
-                commit for commit in page_commits
-                if start_date <= commit["commit"]["committer"]["date"][:10] <= end_date
-            ]
-            
-            commits.extend(filtered_commits)
+            for pr in page_prs:
+                pr_created_date = pr["created_at"][:10]
+                pr_merged_date = pr["merged_at"]
+                if start_date <= pr_created_date <= end_date and pr_merged_date is not None:
+                    pr_stats["pr_merged"] += 1
             
             # Controlla se ci sono altre pagine
             link_header = response.headers.get("Link")
@@ -46,7 +49,7 @@ def get_commits(owner, repository, start_date, end_date):
             print(f"Errore nella richiesta: {response.status_code}")
             return None
     
-    return commits
+    return pr_stats
 
 def get_next_page_url(link_header):
     links = link_header.split(", ")
@@ -60,32 +63,16 @@ def get_next_page_url(link_header):
 
 def plot_points(x_values, y_values):
     plt.plot(x_values, y_values)
-    plt.xlabel('Valori di x')
-    plt.ylabel('Valori di y')
-    plt.title('Grafico a dispersione')
-    #plt.switch_backend('TkAgg')
+    plt.xlabel('Tempo in mesi')
+    plt.ylabel('Numero di Pull Request messe insieme')
+    plt.title('Grafico delle Pull Request messe insieme')
     plt.show()
-
-# Utilizzo dell'esempio di funzione get_commits
-'''owner = "JabRef"
-repository = "jabref"
-start_date = "2012-01-01"
-end_date = "2014-12-31"
-
-commits = get_commits(owner, repository, start_date, end_date)
-
-
-
-if commits:
-    print(f"Il numero di commit nel periodo selezionato è: {len(commits)}")'''
-    #for commit in commits:
-        #print(commit["sha"], commit["commit"]["message"])
 
 if __name__ == "__main__":
     owner = "JabRef"
     repository = "jabref"
     month = 1
-    year = 2013
+    year = 2014
     day_start = 1
     day_end_30 = 30
     day_end_31 = 31
@@ -112,16 +99,13 @@ if __name__ == "__main__":
         else:
             end_date = str(year)+"-"+month2+"-"+str(day_end_31)
         
-        commits = get_commits(owner, repository, start_date, end_date)
-        print("ho calcolato i connit fatti da "+start_date+"fino a "+end_date)
-        if commits:
-            print(f"Il numero di commit nel periodo selezionato è: {len(commits)}")
-            y_value.append(len(commits))
+        stats = get_pr_stats(owner, repository, start_date, end_date)
+        print(f"Calculated PRs from {start_date} to {end_date}")
+        if stats:
+            print(f"Number of PRs merged in the selected period: {stats['pr_merged']}")
+            y_value.append(stats['pr_merged'])
         else:
-            print("Il numero di commit nel periodo selezionato è:0")
+            print("The number of PRs in the selected period is: 0")
             y_value.append(0)
 
-        
     plot_points(x_value, y_value)
-
-
