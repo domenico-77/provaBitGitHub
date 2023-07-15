@@ -31,3 +31,14 @@ jobs:
        python3 NumClosedIssues.py
        python3 NumCommits.py
        python3 NumPullRequests.py
+       
+  archive_logs:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Archive Logs
+        run: |
+          curl -O -J -L -H "Accept: application/vnd.github.v3.raw" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/logs"
