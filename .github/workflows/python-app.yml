@@ -47,4 +47,17 @@ jobs:
       with:
         name: Logs
         path: ${{ github.workspace }}/actions-logs.txt
+      
+    - name: Save artifacts
+        run: |
+          mkdir -p artifacts
+          cp -R <path_to_artifacts> artifacts/
+
+      - name: Commit and push artifacts
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add artifacts
+          git commit -m "Add artifacts"
+          git push
   
