@@ -51,7 +51,7 @@ jobs:
     - name: Save artifacts
       run: |
           mkdir -p artifacts
-          cp -R <path_to_artifacts> artifacts/
+          cp -R artifacts/
 
     - name: Commit and push artifacts
       run: |
