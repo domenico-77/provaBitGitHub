@@ -51,7 +51,7 @@ jobs:
     - name: Save artifacts
       run: |
           mkdir -p artifacts
-          cp -R artifacts/
+          cp -R ${{ github.workspace }}/actions-logs.txt artifacts/
 
     - name: Commit and push artifacts
       run: |
