@@ -2,7 +2,7 @@ import csv
 import os
 
 # Definisci il percorso del file CSV da creare
-file_path = "output/outut.csv"
+file_path = os.path.join(os.getcwd(),"output/outut.csv")
 
 # Estrai il percorso della directory dal percorso del file
 directory = os.path.dirname(file_path)
