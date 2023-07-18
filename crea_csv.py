@@ -1,4 +1,5 @@
 import csv
+import os
 
 # Definisci il percorso del file CSV da creare
 file_path = "output.csv"
