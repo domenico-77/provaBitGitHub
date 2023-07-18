@@ -2,7 +2,7 @@ import csv
 import os
 
 # Definisci il percorso del file CSV da creare
-file_path = "output.csv"
+file_path = "../output/output.csv"
 
 # Definisci i dati da scrivere nel file CSV
 data = [["ciao"]]
