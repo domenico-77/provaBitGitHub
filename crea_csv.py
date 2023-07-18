@@ -25,4 +25,5 @@ else:
         writer.writerows(data)
 
 print("Il file CSV è stato creato correttamente.")
+print(str(os.getcwd()))
 
